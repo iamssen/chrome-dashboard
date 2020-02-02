@@ -8,7 +8,8 @@
     "build": "npm run app:build",
     "start": "npm run app:start",
     "test": "jest --colors",
-    "lint": "eslint \"src/**/*.{js,jsx,mjs,ts,tsx}\" && tslint \"src/**/*.{ts,tsx}\""
+    "lint": "eslint \"src/**/*.{js,jsx,mjs,ts,tsx}\" && tslint \"src/**/*.{ts,tsx}\"",
+    "docs:import": "markdown-source-import \"{,!(node_modules)/**/}*.md\""
   },
   "jest": {
     "preset": "react-zeroconfig"
