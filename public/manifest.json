@@ -1,0 +1,44 @@
+{
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": [
+        "vendor.js",
+        "content.js"
+      ],
+      "matches": [
+        "*://paper.dropbox.com/*"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "description": "SSen's Dashboard",
+  "manifest_version": 2,
+  "name": "SSen's Dashboard",
+  "permissions": [
+    "tabs",
+    "management",
+    "topSites",
+    "bookmarks",
+    "storage",
+    "*://paper.dropbox.com/",
+    "<all_urls>"
+  ],
+  "update_url": "https://clients2.google.com/service/update2/crx",
+  "version": "0.1.0",
+  "icons": {
+    "16": "icons/icon.png",
+    "48": "icons/icon.png",
+    "128": "icons/icon.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "icons/icon.png",
+      "38": "icons/icon.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  }
+}
