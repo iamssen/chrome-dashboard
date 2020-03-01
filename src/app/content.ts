@@ -1,10 +1,9 @@
+import { services } from '@ssen/dashboard-provider';
 import { stateObserver } from '@ssen/state-observer';
-import { getDropboxPaper } from './services/getDropboxPaper';
-import { setStorageData } from './services/setStorageData';
 
-stateObserver({ getState: getDropboxPaper }).subscribe(dropboxPaper => {
+stateObserver({ getState: services.getDropboxPaper }).subscribe(dropboxPaper => {
   console.log('CAPTURE DATA:', dropboxPaper);
-  setStorageData({
+  services.setStorageData({
     dropboxPaper,
   });
 });

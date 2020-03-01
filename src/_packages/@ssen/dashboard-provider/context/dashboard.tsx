@@ -6,11 +6,11 @@ import { getBookmarks } from '../services/getBookmarks';
 import { getStorageData } from '../services/getStorageData';
 import { getTopSites } from '../services/getTopSites';
 
-export interface AppProviderProps {
+export interface DashboardProviderProps {
   children: ReactNode;
 }
 
-export interface AppState {
+export interface DashboardState {
   storageData: StorageData;
   bookmarks: chrome.bookmarks.BookmarkTreeNode[];
   topSites: chrome.topSites.MostVisitedURL[];
@@ -18,16 +18,16 @@ export interface AppState {
 }
 
 // @ts-ignore
-const AppContext: Context<AppState> = createContext<AppState>();
+const DashboardContext: Context<DashboardState> = createContext<DashboardState>();
 
-export function AppProvider({ children }: AppProviderProps) {
+export function DashboardProvider({ children }: DashboardProviderProps) {
   const storageData: StorageData = useStateObserver({ getState: getStorageData, initialState: {} });
   const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = useStateObserver({ getState: getBookmarks, initialState: [] });
   const topSites: chrome.topSites.MostVisitedURL[] = useStateObserver({ getState: getTopSites, initialState: [] });
   const apps: chrome.management.ExtensionInfo[] = useStateObserver({ getState: getApps, initialState: [] });
 
   return (
-    <AppContext.Provider
+    <DashboardContext.Provider
       value={{
         storageData: storageData || {},
         bookmarks: bookmarks || [],
@@ -36,12 +36,12 @@ export function AppProvider({ children }: AppProviderProps) {
       }}
     >
       {children}
-    </AppContext.Provider>
+    </DashboardContext.Provider>
   );
 }
 
-export function useApp(): AppState {
-  return useContext(AppContext);
+export function useDashboard(): DashboardState {
+  return useContext(DashboardContext);
 }
 
-export const AppConsumer: Consumer<AppState> = AppContext.Consumer;
+export const DashboardConsumer: Consumer<DashboardState> = DashboardContext.Consumer;

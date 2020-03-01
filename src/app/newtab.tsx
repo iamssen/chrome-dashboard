@@ -1,7 +1,22 @@
+import {
+  DashboardProvider,
+  filterDocsWithTags,
+  filterFavoriteDocs,
+  filterTasks7Days,
+  filterTasksNotToday,
+  filterTasksToday,
+  filterUncategoriezedDocs,
+  groupTasks,
+  sortTasks,
+  useDashboard,
+  sortFolders,
+} from '@ssen/dashboard-provider';
+import { format } from 'date-fns';
+import { pipe } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
+import { DropboxPaperFolderList } from './components/DropboxPaperFolderList';
 import { Title } from './components/Title';
-import { AppProvider, useApp } from './context/app';
 
 function Layout() {
   const {
@@ -9,27 +24,13 @@ function Layout() {
     bookmarks,
     apps,
     topSites,
-  } = useApp();
+  } = useDashboard();
 
   return (
     <div>
       <Title text="Hello NewTab ???? $$$$" />
       <div style={{ display: 'flex' }}>
-        <ul>
-          <li>folders ({dropboxPaper?.folders.length})</li>
-          {dropboxPaper?.folders.map(({ name, id: folderId, docs }) => (
-            <li key={folderId}>
-              {name}
-              {docs.length > 0 && (
-                <ul>
-                  {docs.map(({ title, id: docId }) => (
-                    <li key={folderId + docId}>{title}</li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
+        <div>{dropboxPaper && <DropboxPaperFolderList folders={sortFolders(dropboxPaper.folders)} />}</div>
         <ul>
           <li>bookmarks ({bookmarks.length})</li>
           {bookmarks.map(({ title, id }) => (
@@ -49,25 +50,115 @@ function Layout() {
           ))}
         </ul>
         <ul>
-          <li>docs ({dropboxPaper?.docs.length})</li>
+          <li>
+            <h3>favorite</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterFavoriteDocs, docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(dropboxPaper.docs)}
+          <li>
+            <h3>routine</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterDocsWithTags('r', 'routine'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+              dropboxPaper.docs,
+            )}
+          <li>
+            <h3>inbox</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterDocsWithTags('i', 'inbox'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+              dropboxPaper.docs,
+            )}
+          <li>
+            <h3>next</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterDocsWithTags('n', 'next'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+              dropboxPaper.docs,
+            )}
+          <li>
+            <h3>someday</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterDocsWithTags('s', 'someday'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+              dropboxPaper.docs,
+            )}
+          <li>
+            <h3>uncategoriezed</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterUncategoriezedDocs, docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+              dropboxPaper.docs,
+            )}
+          <li>
+            <h3>docs ({dropboxPaper?.docs.length})</h3>
+          </li>
           {dropboxPaper?.docs.map(({ title, id }) => (
             <li key={id}>{title}</li>
           ))}
         </ul>
         <ul>
-          <li>tasks ({dropboxPaper?.tasks.length})</li>
+          <li>
+            <h3>today</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterTasksToday, sortTasks, groupTasks, tasks =>
+              tasks.map(({ padUrl, title, children }) => (
+                <li key={padUrl}>
+                  {title}
+                  <ul>
+                    {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
+                      <li key={encryptedId}>
+                        <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
+                          {dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} {textline}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              )),
+            )(dropboxPaper.tasks)}
+          <li>
+            <h3>week</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(filterTasks7Days, filterTasksNotToday, sortTasks, groupTasks, tasks =>
+              tasks.map(({ padUrl, title, children }) => (
+                <li key={padUrl}>
+                  {title}
+                  <ul>
+                    {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
+                      <li key={encryptedId}>
+                        <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
+                          {dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} {textline}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              )),
+            )(dropboxPaper.tasks)}
+          <li>
+            <h3>tasks ({dropboxPaper?.tasks.length})</h3>
+          </li>
           {/*https://paper.dropbox.com/doc/iSUuw3g4D37WcTcEqJMp4#:hluuid=206582632020440577868479*/}
-          {dropboxPaper?.tasks
-            .sort((a, b) => {
-              return (b.dueDate ? new Date(b.dueDate).getTime() : 0) - (a.dueDate ? new Date(a.dueDate).getTime() : 0);
-            })
-            .map(({ usuallyUniqueId, title, padUrl, textline, dueDate, encryptedId }) => (
-              <li key={encryptedId}>
-                <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
-                  {textline} ({title} / {dueDate})
-                </a>
-              </li>
-            ))}
+          {dropboxPaper &&
+            pipe(sortTasks, groupTasks, tasks =>
+              tasks.map(({ padUrl, title, children }) => (
+                <li key={padUrl}>
+                  {title}
+                  <ul>
+                    {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
+                      <li key={encryptedId}>
+                        <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
+                          {dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} {textline}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              )),
+            )(dropboxPaper.tasks)}
         </ul>
       </div>
     </div>
@@ -76,9 +167,9 @@ function Layout() {
 
 function App() {
   return (
-    <AppProvider>
+    <DashboardProvider>
       <Layout />
-    </AppProvider>
+    </DashboardProvider>
   );
 }
 

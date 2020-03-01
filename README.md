@@ -40,9 +40,9 @@ describe('Sample', () => {
 
 ```tsx
 import { hierarchyBy, someHierarchy } from '@ssen/hierarchy';
-import { HierarchyList, MemoryOpenProvider, TreeNode } from '@ssen/hierarchy-list';
+import { HierarchyList, MemoryOpenProvider, OpenProvider, TreeNode } from '@ssen/hierarchy-list';
 import { storiesOf } from '@storybook/react';
-import React from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 
 interface Data {
   title: string;
@@ -80,44 +80,73 @@ function dropLastCharacter(str: string): string {
   return chars.join('');
 }
 
-const nodes: TreeNode<Data>[] = hierarchyBy<Data, TreeNode<Data>>({
-  data,
-  id: 'title',
-  parentId: ({ title }) => dropLastCharacter(title),
-  map: source => ({ id: source.title, source }),
-  link: (parent, child) => {
-    parent.children = parent.children || [];
-    parent.children.push(child);
-  },
-});
+function initialOpen({ source: { favorite }, children }: TreeNode<Data>): boolean {
+  if (favorite) return true;
+  if (!children) return false;
+  return someHierarchy({
+    data: children,
+    children: 'children',
+    some: ({ source }) => source.favorite,
+  });
+}
+
+function titleRenderer({ source: { title, favorite } }: TreeNode<Data>): ReactNode {
+  return (
+    <>
+      {favorite && '⭐️'}
+      {title}
+    </>
+  );
+}
+
+function dateAttribute({ source: { title, favorite } }: TreeNode<Data>) {
+  return {
+    'data-title': title,
+    'data-favorite': favorite.toString(),
+  };
+}
+
+function openRenderer(open: boolean, onToggle: () => void): ReactNode {
+  return <button onClick={onToggle}>{open ? '[+]' : '[-]'}</button>;
+}
 
 storiesOf('hierarchy-list', module).add('basic', () => {
+  const nodes = useMemo<TreeNode<Data>[]>(
+    () =>
+      hierarchyBy<Data, TreeNode<Data>>({
+        data,
+        id: 'title',
+        parentId: ({ title }) => dropLastCharacter(title),
+        map: source => ({ id: source.title, source }),
+        link: (parent, child) => {
+          parent.children = parent.children || [];
+          parent.children.push(child);
+        },
+      }),
+    [],
+  );
+
+  const openProvider = useMemo<OpenProvider>(() => {
+    return new MemoryOpenProvider();
+  }, []);
+
+  const [allFolderOpen, setAllFolderOpen] = useState<boolean>(false);
+
   return (
-    <HierarchyList
-      data={nodes}
-      openProvider={new MemoryOpenProvider()}
-      allFolderOpen={false}
-      initialOpen={({ source: { favorite }, children }: TreeNode<Data>) => {
-        if (favorite) return true;
-        if (!children) return false;
-        return someHierarchy({
-          data: children,
-          children: 'children',
-          some: ({ source }) => source.favorite,
-        });
-      }}
-      titleRenderer={({ source: { title, favorite } }: TreeNode<Data>) => (
-        <>
-          {favorite && '⭐️'}
-          {title}
-        </>
-      )}
-      dataAttribute={({ source: { title, favorite } }: TreeNode<Data>) => ({
-        'data-title': title,
-        'data-favorite': favorite.toString(),
-      })}
-      openRenderer={(open, onToggle) => <button onClick={onToggle}>{open ? '[+]' : '[-]'}</button>}
-    />
+    <div>
+      <HierarchyList
+        data={nodes}
+        openProvider={openProvider}
+        allFolderOpen={allFolderOpen}
+        initialOpen={initialOpen}
+        titleRenderer={titleRenderer}
+        dataAttribute={dateAttribute}
+        openRenderer={openRenderer}
+      />
+      <div>
+        <button onClick={() => setAllFolderOpen(!allFolderOpen)}>all folder open: {allFolderOpen}</button>
+      </div>
+    </div>
   );
 });
 
