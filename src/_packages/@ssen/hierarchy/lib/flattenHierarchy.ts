@@ -4,13 +4,9 @@ interface Params<H extends {}, F extends {}> {
   map: (datum: H, parent?: H) => F;
 }
 
-export function flattenHierarchy<H extends {}, F extends {}>({
-                                                               data,
-                                                               children,
-                                                               map,
-                                                             }: Params<H, F>): F[] {
+export function flattenHierarchy<H extends {}, F extends {}>({ data, children, map }: Params<H, F>): F[] {
   const flat: F[] = [];
-  
+
   function fn(arr: H[], parent?: H) {
     for (const datum of arr) {
       const obj: F = map(datum, parent);
@@ -21,8 +17,8 @@ export function flattenHierarchy<H extends {}, F extends {}>({
       }
     }
   }
-  
+
   fn(data);
-  
+
   return flat;
 }

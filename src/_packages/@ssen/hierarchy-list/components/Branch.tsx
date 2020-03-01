@@ -8,35 +8,33 @@ export interface BranchProps {
   node: TreeNode;
 }
 
-export function Branch({node}: BranchProps) {
-  const {openProvider, initialOpen, openRenderer, titleRenderer, allFolderOpen} = useHierarchy();
+export function Branch({ node }: BranchProps) {
+  const { openProvider, initialOpen, openRenderer, titleRenderer, allFolderOpen } = useHierarchy();
   const [open, setOpen] = useState<boolean>(false);
-  
+
   const toggle: () => void = useCallback(() => {
     const nextOpen: boolean = !open;
     openProvider.update(node.id, nextOpen);
   }, [node.id, open, openProvider]);
-  
+
   useEffect(() => {
     const subscription: Subscription = openProvider.subscribe(node.id, initialOpen(node)).subscribe(setOpen);
     return () => {
       subscription.unsubscribe();
     };
-  }, [openProvider, initialOpen, node.id, node.source]);
-  
+  }, [openProvider, initialOpen, node.id, node.source, node]);
+
   return (
     <Fragment>
       <span>
         {openRenderer(open, toggle)}
         {titleRenderer(node)}
       </span>
-      {
-        node.children &&
-        (open || allFolderOpen) &&
+      {node.children && (open || allFolderOpen) && (
         <ul>
-          <Children children={node.children}/>
+          <Children children={node.children} />
         </ul>
-      }
+      )}
     </Fragment>
   );
 }

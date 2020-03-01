@@ -8,22 +8,16 @@ export interface ChildrenProps {
   children: TreeNode[] | undefined;
 }
 
-export function Children({children}: ChildrenProps) {
-  const {dataAttribute} = useHierarchy();
-  
+export function Children({ children }: ChildrenProps) {
+  const { dataAttribute } = useHierarchy();
+
   return (
     <Fragment>
-      {
-        children?.map(node => (
-          <li key={node.id} {...dataAttribute(node)}>
-            {
-              node.children
-                ? <Branch node={node}/>
-                : <Leaf node={node}/>
-            }
-          </li>
-        ))
-      }
+      {children?.map(node => (
+        <li key={node.id} {...dataAttribute(node)}>
+          {node.children ? <Branch node={node} /> : <Leaf node={node} />}
+        </li>
+      ))}
     </Fragment>
   );
 }

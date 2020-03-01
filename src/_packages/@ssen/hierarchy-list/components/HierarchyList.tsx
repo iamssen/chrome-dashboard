@@ -9,20 +9,14 @@ export interface HierarchyListProps extends HierarchyListConfig {
   className?: string;
 }
 
-function HierarchyListBase({
-                             data,
-                             className,
-                             ...config
-                           }: HierarchyListProps) {
+function HierarchyListBase({ data, className, ...config }: HierarchyListProps) {
   return (
     <HierarchyProvider {...config}>
       <ul className={className}>
-        <Children children={data}/>
+        <Children children={data} />
       </ul>
     </HierarchyProvider>
   );
 }
 
-export const HierarchyList: ComponentType<HierarchyListProps> = styled(HierarchyListBase)`
-
-`;
+export const HierarchyList: ComponentType<HierarchyListProps> = styled(HierarchyListBase)``;

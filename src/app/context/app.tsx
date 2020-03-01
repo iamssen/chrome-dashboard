@@ -20,19 +20,21 @@ export interface AppState {
 // @ts-ignore
 const AppContext: Context<AppState> = createContext<AppState>();
 
-export function AppProvider({children}: AppProviderProps) {
-  const storageData: StorageData = useStateObserver({getState: getStorageData, initialState: {}});
-  const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = useStateObserver({getState: getBookmarks, initialState: []});
-  const topSites: chrome.topSites.MostVisitedURL[] = useStateObserver({getState: getTopSites, initialState: []});
-  const apps: chrome.management.ExtensionInfo[] = useStateObserver({getState: getApps, initialState: []});
-  
+export function AppProvider({ children }: AppProviderProps) {
+  const storageData: StorageData = useStateObserver({ getState: getStorageData, initialState: {} });
+  const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = useStateObserver({ getState: getBookmarks, initialState: [] });
+  const topSites: chrome.topSites.MostVisitedURL[] = useStateObserver({ getState: getTopSites, initialState: [] });
+  const apps: chrome.management.ExtensionInfo[] = useStateObserver({ getState: getApps, initialState: [] });
+
   return (
-    <AppContext.Provider value={{
-      storageData: storageData || {},
-      bookmarks: bookmarks || [],
-      topSites: topSites || [],
-      apps: apps || [],
-    }}>
+    <AppContext.Provider
+      value={{
+        storageData: storageData || {},
+        bookmarks: bookmarks || [],
+        topSites: topSites || [],
+        apps: apps || [],
+      }}
+    >
       {children}
     </AppContext.Provider>
   );

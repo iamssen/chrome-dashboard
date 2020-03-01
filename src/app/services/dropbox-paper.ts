@@ -47,9 +47,9 @@ export interface Folder {
     isDeleted: boolean;
     isProject: boolean;
     createdDate: string; // Date string
-    lastActivityDate: string;  // Date string
+    lastActivityDate: string; // Date string
     numPads: number;
-    numSubFolders: number
+    numSubFolders: number;
   };
   inSidebar: boolean;
   subscriptionLevel: number;
@@ -66,7 +66,7 @@ export interface Folder {
     lastViewedFolderTime: string; // Date string
     firstViewedPadTime: string; // Date string
     lastViewedPadTime: string; // Date string
-  }
+  };
 }
 
 export interface PadListDoc extends DeleteState {
@@ -77,29 +77,29 @@ export interface PadListDoc extends DeleteState {
   team: {
     id: string;
     name: string;
-    isDeleted: boolean
+    isDeleted: boolean;
     config: {
       isPersonalTeam: boolean;
-    }
+    };
   };
   lastEditor: {
     id: string;
-    name: string
+    name: string;
   };
   lastEditedDate: string; // Date string
   editors: [
     {
       id: string;
-      name: string
-    }
+      name: string;
+    },
   ];
   creator: {
     id: string;
-    name: string
+    name: string;
   };
   owner: {
     id: string;
-    name: string
+    name: string;
   };
   activeUsers: string[];
   docView: {
@@ -109,11 +109,11 @@ export interface PadListDoc extends DeleteState {
     lastOpenedRev: number;
     lastClosedRev: number;
     totalViewCount: number;
-    recentViewCount: number
+    recentViewCount: number;
   };
   docPreferences: {
     subscriptionLevel: number;
-    isFavorite: boolean
+    isFavorite: boolean;
   };
   type: number;
   globalRev: number;
@@ -149,12 +149,12 @@ export interface PadListFolder {
     guestPolicy: number;
     team: {
       id: string;
-      name: string
-    }
+      name: string;
+    };
   }[];
   team: {
     id: string;
-    name: string
+    name: string;
   };
   docs: PadListDoc[];
   isFavorite: boolean; // custom data

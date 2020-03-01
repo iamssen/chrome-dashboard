@@ -5,17 +5,18 @@ export interface HierarchyProviderProps extends HierarchyListConfig {
   children: ReactNode;
 }
 
-export interface HierarchyState extends HierarchyListConfig {
-}
+export interface HierarchyState extends HierarchyListConfig {}
 
 // @ts-ignore
 const HierarchyContext: Context<HierarchyState> = createContext<HierarchyState>();
 
-export function HierarchyProvider({children, ...config}: HierarchyProviderProps) {
+export function HierarchyProvider({ children, ...config }: HierarchyProviderProps) {
   return (
-    <HierarchyContext.Provider value={{
-      ...config,
-    }}>
+    <HierarchyContext.Provider
+      value={{
+        ...config,
+      }}
+    >
       {children}
     </HierarchyContext.Provider>
   );

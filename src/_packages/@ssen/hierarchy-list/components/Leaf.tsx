@@ -6,12 +6,8 @@ export interface LeafProps {
   node: TreeNode;
 }
 
-export function Leaf({node}: LeafProps) {
-  const {titleRenderer} = useHierarchy();
-  
-  return (
-    <span>
-      {titleRenderer(node)}
-    </span>
-  );
+export function Leaf({ node }: LeafProps) {
+  const { titleRenderer } = useHierarchy();
+
+  return <span>{titleRenderer(node)}</span>;
 }

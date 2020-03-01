@@ -7,12 +7,12 @@ export interface TreeNode<T = {}> {
   children?: TreeNode<T>[];
 }
 
-//tslint:disable:no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface HierarchyListConfig {
   openProvider: OpenProvider;
   openRenderer: (open: boolean, onToggle: () => void) => ReactNode;
   titleRenderer: (node: TreeNode<any>) => ReactNode;
-  dataAttribute: (node: TreeNode<any>) => {[key: string]: string};
+  dataAttribute: (node: TreeNode<any>) => { [key: string]: string };
   initialOpen: (node: TreeNode<any>) => boolean;
   allFolderOpen: boolean;
 }
