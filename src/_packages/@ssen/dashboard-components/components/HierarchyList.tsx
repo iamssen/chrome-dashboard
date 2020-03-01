@@ -1,5 +1,4 @@
-import React from 'react';
+import { HierarchyList as _HierarchyList } from '@ssen/hierarchy-list';
 import styled from 'styled-components';
-import { HierarchyList as _HierarchyList, HierarchyListProps } from '@ssen/hierarchy-list';
 
 export const HierarchyList = styled(_HierarchyList).attrs(({ openProvider }) => ({}));
