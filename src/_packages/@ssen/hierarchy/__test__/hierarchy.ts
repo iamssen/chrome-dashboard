@@ -61,7 +61,7 @@ describe('hierarchy', () => {
         data: flat,
         id: 'id',
         parentId: 'parent',
-        map: datum => ({ ...datum }),
+        map: (datum) => ({ ...datum }),
         link: (parent, child) => {
           parent.children = parent.children || [];
           parent.children.push(child);

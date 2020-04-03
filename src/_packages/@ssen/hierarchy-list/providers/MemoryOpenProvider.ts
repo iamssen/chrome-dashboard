@@ -19,7 +19,7 @@ export class MemoryOpenProvider implements OpenProvider {
       });
     }
 
-    return this.subject.pipe(map<State, boolean>(state => state[id]));
+    return this.subject.pipe(map<State, boolean>((state) => state[id]));
   };
 
   update = (id: string, open: boolean) => {

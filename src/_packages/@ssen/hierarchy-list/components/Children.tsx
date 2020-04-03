@@ -13,7 +13,7 @@ export function Children({ children }: ChildrenProps) {
 
   return (
     <Fragment>
-      {children?.map(node => (
+      {children?.map((node) => (
         <li key={node.id} {...dataAttribute(node)}>
           {node.children ? <Branch node={node} /> : <Leaf node={node} />}
         </li>

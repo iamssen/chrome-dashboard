@@ -40,7 +40,7 @@ export function hierarchyFolders(folders: PadListFolder[]): DropboxPaperFolder[]
     data: folders,
     id: ({ id }) => id,
     parentId: ({ parentFolders }) => parentFolders[0]?.id,
-    map: source => ({ id: source.id, source }),
+    map: (source) => ({ id: source.id, source }),
     link: (parent, child) => {
       parent.children = parent.children || [];
       parent.children.push(child);

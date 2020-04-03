@@ -76,7 +76,7 @@ storiesOf('hierarchy-list', module).add('basic', () => {
         data,
         id: 'title',
         parentId: ({ title }) => dropLastCharacter(title),
-        map: source => ({ id: source.title, source }),
+        map: (source) => ({ id: source.title, source }),
         link: (parent, child) => {
           parent.children = parent.children || [];
           parent.children.push(child);

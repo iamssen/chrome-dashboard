@@ -54,40 +54,42 @@ function Layout() {
             <h3>favorite</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterFavoriteDocs, docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(dropboxPaper.docs)}
+            pipe(filterFavoriteDocs, (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+              dropboxPaper.docs,
+            )}
           <li>
             <h3>routine</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('r', 'routine'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+            pipe(filterDocsWithTags('r', 'routine'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
               dropboxPaper.docs,
             )}
           <li>
             <h3>inbox</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('i', 'inbox'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+            pipe(filterDocsWithTags('i', 'inbox'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
               dropboxPaper.docs,
             )}
           <li>
             <h3>next</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('n', 'next'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+            pipe(filterDocsWithTags('n', 'next'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
               dropboxPaper.docs,
             )}
           <li>
             <h3>someday</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('s', 'someday'), docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+            pipe(filterDocsWithTags('s', 'someday'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
               dropboxPaper.docs,
             )}
           <li>
             <h3>uncategoriezed</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterUncategoriezedDocs, docs => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
+            pipe(filterUncategoriezedDocs, (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
               dropboxPaper.docs,
             )}
           <li>
@@ -102,7 +104,7 @@ function Layout() {
             <h3>today</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterTasksToday, sortTasks, groupTasks, tasks =>
+            pipe(filterTasksToday, sortTasks, groupTasks, (tasks) =>
               tasks.map(({ padUrl, title, children }) => (
                 <li key={padUrl}>
                   {title}
@@ -122,7 +124,7 @@ function Layout() {
             <h3>week</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterTasks7Days, filterTasksNotToday, sortTasks, groupTasks, tasks =>
+            pipe(filterTasks7Days, filterTasksNotToday, sortTasks, groupTasks, (tasks) =>
               tasks.map(({ padUrl, title, children }) => (
                 <li key={padUrl}>
                   {title}
@@ -143,7 +145,7 @@ function Layout() {
           </li>
           {/*https://paper.dropbox.com/doc/iSUuw3g4D37WcTcEqJMp4#:hluuid=206582632020440577868479*/}
           {dropboxPaper &&
-            pipe(sortTasks, groupTasks, tasks =>
+            pipe(sortTasks, groupTasks, (tasks) =>
               tasks.map(({ padUrl, title, children }) => (
                 <li key={padUrl}>
                   {title}

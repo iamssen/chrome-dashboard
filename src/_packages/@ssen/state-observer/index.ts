@@ -12,7 +12,7 @@ export function stateObserver<T>({
   initialState,
   interval = 60 * 1000,
 }: ObserveStateParams<T>): Observable<T> {
-  return new Observable<T>(observer => {
+  return new Observable<T>((observer) => {
     let timeoutId: number | null = null;
 
     async function fn() {
