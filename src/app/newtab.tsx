@@ -4,19 +4,61 @@ import {
   filterFavoriteDocs,
   filterTasks7Days,
   filterTasksNotToday,
+  filterTasksNotTomorrow,
   filterTasksToday,
+  filterTasksTomorrow,
   filterUncategoriezedDocs,
   groupTasks,
-  sortTasks,
-  useDashboard,
+  PadListDoc,
   sortFolders,
+  sortTasks,
+  TaskGroup,
+  useDashboard,
 } from '@ssen/dashboard-provider';
 import { format } from 'date-fns';
 import { pipe } from 'ramda';
 import React from 'react';
 import { render } from 'react-dom';
+import { AllFolderOpenToggleButton } from './components/AllFolderOpenToggleButton';
+import { BookmarkList } from './components/BookmarkList';
 import { DropboxPaperFolderList } from './components/DropboxPaperFolderList';
-import { Title } from './components/Title';
+import { Link } from './components/Link';
+import { OpenNewTabButton } from './components/OpenNewTabButton';
+import { AppProvider } from './context/app';
+
+const printDoc = (docs: PadListDoc[]) => {
+  return docs.map(({ title, id, url }) => (
+    <li key={id}>
+      <Link href={`https://paper.dropbox.com${url}`} title={title} />
+    </li>
+  ));
+};
+
+const printTaskGroup = (tasks: TaskGroup[]) => {
+  return tasks.map(({ padUrl, title, children }) => (
+    <li key={padUrl}>
+      {title}
+      <ul>
+        {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
+          <li key={encryptedId}>
+            <Link
+              href={`${padUrl}#:hluuid=${usuallyUniqueId}`}
+              title={`${dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} ${textline}`}
+            />
+          </li>
+        ))}
+      </ul>
+    </li>
+  ));
+};
+
+const printTopSite = (topSites: chrome.topSites.MostVisitedURL[]) => {
+  return topSites.map(({ title, url }) => (
+    <li key={url}>
+      <Link href={url} title={title} />
+    </li>
+  ));
+};
 
 function Layout() {
   const {
@@ -28,138 +70,136 @@ function Layout() {
 
   return (
     <div>
-      <Title text="Hello NewTab ???? $$$$" />
       <div style={{ display: 'flex' }}>
-        <div>{dropboxPaper && <DropboxPaperFolderList folders={sortFolders(dropboxPaper.folders)} />}</div>
         <ul>
-          <li>bookmarks ({bookmarks.length})</li>
-          {bookmarks.map(({ title, id }) => (
-            <li key={id}>{title}</li>
-          ))}
-        </ul>
-        <ul>
-          <li>apps ({apps.length})</li>
+          <li>
+            <AllFolderOpenToggleButton />
+            <OpenNewTabButton />
+          </li>
+          <li>
+            <h3>top sites ({topSites.length})</h3>
+          </li>
+          {pipe(
+            printTopSite, // print
+          )(topSites)}
+
+          <li>
+            <h3>bookmarks ({bookmarks.length})</h3>
+          </li>
+          <BookmarkList bookmarks={bookmarks} />
+
+          <li>
+            <h3>apps ({apps.length})</h3>
+          </li>
           {apps.map(({ shortName, id }) => (
             <li key={id}>{shortName}</li>
           ))}
-        </ul>
-        <ul>
-          <li>top sites ({topSites.length})</li>
-          {topSites.map(({ title, url }) => (
-            <li key={url}>{title}</li>
-          ))}
-        </ul>
-        <ul>
+
           <li>
             <h3>favorite</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterFavoriteDocs, (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
-              dropboxPaper.docs,
-            )}
+            pipe(
+              filterFavoriteDocs, // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
+        </ul>
+        <ul>
           <li>
             <h3>routine</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('r', 'routine'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
-              dropboxPaper.docs,
-            )}
+            pipe(
+              filterDocsWithTags('r', 'routine'), // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
           <li>
             <h3>inbox</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('i', 'inbox'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
-              dropboxPaper.docs,
-            )}
+            pipe(
+              filterDocsWithTags('i', 'inbox'), // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
           <li>
             <h3>next</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('n', 'next'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
-              dropboxPaper.docs,
-            )}
+            pipe(
+              filterDocsWithTags('n', 'next'), // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
           <li>
             <h3>someday</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterDocsWithTags('s', 'someday'), (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
-              dropboxPaper.docs,
-            )}
+            pipe(
+              filterDocsWithTags('s', 'someday'), // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
           <li>
             <h3>uncategoriezed</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterUncategoriezedDocs, (docs) => docs.map(({ title, id }) => <li key={id}>{title}</li>))(
-              dropboxPaper.docs,
-            )}
+            pipe(
+              filterUncategoriezedDocs, // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
+          <li>
+            <h3>folders</h3>
+          </li>
+          {dropboxPaper && <DropboxPaperFolderList folders={sortFolders(dropboxPaper.folders)} />}
           <li>
             <h3>docs ({dropboxPaper?.docs.length})</h3>
           </li>
-          {dropboxPaper?.docs.map(({ title, id }) => (
-            <li key={id}>{title}</li>
-          ))}
+          {dropboxPaper &&
+            pipe(
+              printDoc, // print
+            )(dropboxPaper.docs)}
         </ul>
         <ul>
           <li>
             <h3>today</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterTasksToday, sortTasks, groupTasks, (tasks) =>
-              tasks.map(({ padUrl, title, children }) => (
-                <li key={padUrl}>
-                  {title}
-                  <ul>
-                    {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
-                      <li key={encryptedId}>
-                        <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
-                          {dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} {textline}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              )),
+            pipe(
+              filterTasksToday, // filter
+              sortTasks, // sort
+              groupTasks, // group
+              printTaskGroup, // print
+            )(dropboxPaper.tasks)}
+          <li>
+            <h3>tomorrow</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(
+              filterTasksTomorrow, // filter
+              filterTasksNotToday,
+              sortTasks, // sort
+              groupTasks, // group
+              printTaskGroup, // print
             )(dropboxPaper.tasks)}
           <li>
             <h3>week</h3>
           </li>
           {dropboxPaper &&
-            pipe(filterTasks7Days, filterTasksNotToday, sortTasks, groupTasks, (tasks) =>
-              tasks.map(({ padUrl, title, children }) => (
-                <li key={padUrl}>
-                  {title}
-                  <ul>
-                    {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
-                      <li key={encryptedId}>
-                        <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
-                          {dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} {textline}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              )),
+            pipe(
+              filterTasks7Days, // filter
+              filterTasksNotToday,
+              filterTasksNotTomorrow,
+              sortTasks, // sort
+              groupTasks, // group
+              printTaskGroup, // print
             )(dropboxPaper.tasks)}
           <li>
             <h3>tasks ({dropboxPaper?.tasks.length})</h3>
           </li>
           {/*https://paper.dropbox.com/doc/iSUuw3g4D37WcTcEqJMp4#:hluuid=206582632020440577868479*/}
           {dropboxPaper &&
-            pipe(sortTasks, groupTasks, (tasks) =>
-              tasks.map(({ padUrl, title, children }) => (
-                <li key={padUrl}>
-                  {title}
-                  <ul>
-                    {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
-                      <li key={encryptedId}>
-                        <a href={`${padUrl}#:hluuid=${usuallyUniqueId}`}>
-                          {dueDate ? format(new Date(dueDate), 'yyyy-MM-dd') : ''} {textline}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              )),
+            pipe(
+              sortTasks, // sort
+              groupTasks, // group
+              printTaskGroup, // print
             )(dropboxPaper.tasks)}
         </ul>
       </div>
@@ -170,7 +210,9 @@ function Layout() {
 function App() {
   return (
     <DashboardProvider>
-      <Layout />
+      <AppProvider>
+        <Layout />
+      </AppProvider>
     </DashboardProvider>
   );
 }

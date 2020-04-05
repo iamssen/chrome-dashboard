@@ -1,11 +1,11 @@
-import { DropboxPaperFolder, hierarchyFolders, PadListFolder } from '@ssen/dashboard-provider';
+import { BookmarkTreeNode, hierarchyBookmarks } from '@ssen/dashboard-provider';
 import { someHierarchy } from '@ssen/hierarchy';
 import { HierarchyList, MemoryOpenProvider, OpenProvider } from '@ssen/hierarchy-list';
 import React, { ReactNode, useMemo } from 'react';
 import { useApp } from '../context/app';
 import { Link } from './Link';
 
-function initialOpen({ source: { isFavorite }, children }: DropboxPaperFolder): boolean {
+function initialOpen({ source: { isFavorite }, children }: BookmarkTreeNode): boolean {
   if (isFavorite) return true;
   if (!children) return false;
   return someHierarchy({
@@ -15,18 +15,18 @@ function initialOpen({ source: { isFavorite }, children }: DropboxPaperFolder): 
   });
 }
 
-function titleRenderer({ source: { id, name, isFavorite } }: DropboxPaperFolder): ReactNode {
+function titleRenderer({ source: { title, url, isFavorite } }: BookmarkTreeNode): ReactNode {
   return (
     <>
       {isFavorite && '⭐️'}
-      <Link href={`https://paper.dropbox.com/folder/show/${id}`} title={name} />
+      <Link href={url || ''} title={title} />
     </>
   );
 }
 
-function dateAttribute({ source: { name, isFavorite } }: DropboxPaperFolder) {
+function dataAttribute({ source: { title, isFavorite } }: BookmarkTreeNode) {
   return {
-    'data-title': name,
+    'data-title': title,
     'data-favorite': isFavorite.toString(),
   };
 }
@@ -35,8 +35,8 @@ function openRenderer(open: boolean, onToggle: () => void): ReactNode {
   return <button onClick={onToggle}>{open ? '[+]' : '[-]'}</button>;
 }
 
-export function DropboxPaperFolderList({ folders }: { folders: PadListFolder[] }) {
-  const data = hierarchyFolders(folders);
+export function BookmarkList({ bookmarks }: { bookmarks: chrome.bookmarks.BookmarkTreeNode[] }) {
+  const data = hierarchyBookmarks(bookmarks);
 
   const openProvider = useMemo<OpenProvider>(() => {
     return new MemoryOpenProvider();
@@ -48,11 +48,11 @@ export function DropboxPaperFolderList({ folders }: { folders: PadListFolder[] }
     <HierarchyList
       data={data}
       openProvider={openProvider}
-      allFolderOpen={allFolderOpen}
-      initialOpen={initialOpen}
-      titleRenderer={titleRenderer}
-      dataAttribute={dateAttribute}
       openRenderer={openRenderer}
+      titleRenderer={titleRenderer}
+      dataAttribute={dataAttribute}
+      initialOpen={initialOpen}
+      allFolderOpen={allFolderOpen}
     />
   );
 }

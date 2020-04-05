@@ -1,6 +1,7 @@
 import { hierarchyBy } from '@ssen/hierarchy';
 import { addDays, endOfDay } from 'date-fns';
 import { PadListDoc, PadListFolder, Task } from '../services/dropbox-paper';
+import { hasTag } from './title';
 
 export interface DropboxPaperData {
   folders: PadListFolder[];
@@ -48,15 +49,6 @@ export function hierarchyFolders(folders: PadListFolder[]): DropboxPaperFolder[]
   });
 }
 
-export const hasTag = (...tags: string[]) => (title: string): boolean => {
-  for (const tag of tags) {
-    if (title.indexOf('#' + tag) > -1) {
-      return true;
-    }
-  }
-  return false;
-};
-
 export function isFavoriteDoc(doc: PadListDoc): boolean {
   return doc.docPreferences.isFavorite || hasTag('f', 'favorite')(doc.title);
 }
@@ -101,9 +93,27 @@ export function filterTasksToday(tasks: Task[]): Task[] {
   });
 }
 
+export function filterTasksTomorrow(tasks: Task[]): Task[] {
+  const today: Date = new Date();
+  const end: Date = addDays(endOfDay(today), 1);
+
+  return tasks.filter(({ dueDate }) => {
+    return !dueDate ? false : new Date(dueDate) < end;
+  });
+}
+
 export function filterTasksNotToday(tasks: Task[]): Task[] {
   const today: Date = new Date();
   const end: Date = endOfDay(today);
+
+  return tasks.filter(({ dueDate }) => {
+    return !dueDate ? true : new Date(dueDate) > end;
+  });
+}
+
+export function filterTasksNotTomorrow(tasks: Task[]): Task[] {
+  const today: Date = new Date();
+  const end: Date = addDays(endOfDay(today), 1);
 
   return tasks.filter(({ dueDate }) => {
     return !dueDate ? true : new Date(dueDate) > end;

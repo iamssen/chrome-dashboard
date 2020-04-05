@@ -58,7 +58,7 @@
     "@storybook/source-loader": "^5.3.18",
     "@types/chrome": "0.0.103",
     "@types/eslint": "^6.1.9",
-    "@types/jest": "^25.1.5",
+    "@types/jest": "^25.2.1",
     "@types/js-cookie": "^2.2.5",
     "@types/lodash": "^4.14.149",
     "@types/puppeteer": "^2.0.1",

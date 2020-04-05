@@ -1,9 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Title } from './components/Title';
 
 function App() {
-  return <Title text="Hello Popup ???? what????" />;
+  return <div>Popup...</div>;
 }
 
 render(<App />, document.querySelector('#app'));
