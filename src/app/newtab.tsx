@@ -106,6 +106,14 @@ function Layout() {
         </ul>
         <ul>
           <li>
+            <h3>active</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(
+              filterDocsWithTags('a', 'active'), // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
+          <li>
             <h3>routine</h3>
           </li>
           {dropboxPaper &&
