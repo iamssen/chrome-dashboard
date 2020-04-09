@@ -10,7 +10,7 @@ export interface ObserveStateParams<T> {
 export function stateObserver<T>({
   getState,
   initialState,
-  interval = 60 * 1000,
+  interval = 30 * 1000,
 }: ObserveStateParams<T>): Observable<T> {
   return new Observable<T>((observer) => {
     let timeoutId: number | null = null;
@@ -41,7 +41,7 @@ export interface UseObserveStateParams<T> {
   interval?: number;
 }
 
-export function useStateObserver<T>({ getState, interval = 60 * 1000, initialState }: UseObserveStateParams<T>): T {
+export function useStateObserver<T>({ getState, interval = 30 * 1000, initialState }: UseObserveStateParams<T>): T {
   const [state, setState] = useState<T>(initialState);
 
   useEffect(() => {

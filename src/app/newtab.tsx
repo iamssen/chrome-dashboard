@@ -10,6 +10,7 @@ import {
   filterUncategoriezedDocs,
   groupTasks,
   PadListDoc,
+  sortDocsByRecently,
   sortFolders,
   sortTasks,
   TaskGroup,
@@ -143,6 +144,15 @@ function Layout() {
           {dropboxPaper &&
             pipe(
               filterDocsWithTags('s', 'someday'), // filter
+              printDoc, // print
+            )(dropboxPaper.docs)}
+          <li>
+            <h3>recently docs</h3>
+          </li>
+          {dropboxPaper &&
+            pipe(
+              sortDocsByRecently, // sort
+              (docs) => docs.slice(0, 20), // slice
               printDoc, // print
             )(dropboxPaper.docs)}
           <li>
