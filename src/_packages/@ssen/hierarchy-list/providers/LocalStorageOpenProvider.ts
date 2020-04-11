@@ -8,14 +8,14 @@ export interface LocalStorageOpenProviderConfig {
 
 type State = { [key: string]: boolean };
 
-function getStorage(): State {
-  const value: string | null | undefined = localStorage.getItem(this.id);
+function getStorage(id: string): State {
+  const value: string | null | undefined = localStorage.getItem(id);
   if (!value) return {};
   return JSON.parse(value);
 }
 
-function setStorage(nextState: State) {
-  localStorage.setItem(this.id, JSON.stringify(nextState));
+function setStorage(id: string, nextState: State) {
+  localStorage.setItem(id, JSON.stringify(nextState));
 }
 
 export class LocalStorageOpenProvider implements OpenProvider {
@@ -24,27 +24,27 @@ export class LocalStorageOpenProvider implements OpenProvider {
 
   constructor(private config: LocalStorageOpenProviderConfig) {
     this.id = `--hierarchy-list--${this.config.id}`;
-    this.subject = new BehaviorSubject<State>(getStorage());
+    this.subject = new BehaviorSubject<State>(getStorage(this.id));
   }
 
-  subscribe = (id: string, initialOpen: boolean) => {
-    if (typeof this.subject.getValue()[id] !== 'boolean') {
+  subscribe = (key: string, initialOpen: boolean) => {
+    if (typeof this.subject.getValue()[key] !== 'boolean') {
       this.subject.next({
         ...this.subject.getValue(),
-        [id]: initialOpen,
+        [key]: initialOpen,
       });
     }
 
-    return this.subject.pipe(map<State, boolean>((state) => state[id]));
+    return this.subject.pipe(map<State, boolean>((state) => state[key]));
   };
 
-  update = (id: string, open: boolean) => {
+  update = (key: string, open: boolean) => {
     const nextState: State = {
       ...this.subject.getValue(),
-      [id]: open,
+      [key]: open,
     };
 
-    setStorage(nextState);
+    setStorage(this.id, nextState);
 
     this.subject.next(nextState);
   };

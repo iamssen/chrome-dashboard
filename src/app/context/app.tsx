@@ -1,13 +1,12 @@
-import React, { Consumer, Context, createContext, ReactNode, useContext, useMemo, useState } from 'react';
+import { useLocalStorage } from '@ssen/use-local-storage';
+import React, { Consumer, Context, createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
+import { Config } from '../model/config';
 
 export interface AppProviderProps {
   children: ReactNode;
 }
 
-export interface AppState {
-  allFolderOpen: boolean;
-  openNewTab: boolean;
-
+export interface AppState extends Config {
   updateAllFolderOpen: (nextAllFolderOpen: boolean) => void;
   updateOpenNewTab: (nextOpenNewTab: boolean) => void;
 }
@@ -16,17 +15,40 @@ export interface AppState {
 const AppContext: Context<AppState> = createContext<AppState>();
 
 export function AppProvider({ children }: AppProviderProps) {
-  const [allFolderOpen, setAllFolderOpen] = useState<boolean>(() => false);
-  const [openNewTab, setOpenNewTab] = useState<boolean>(() => false);
+  const [config, updateConfig] = useLocalStorage<Config>({
+    id: 'app-configs',
+    defaultValue: () => ({
+      allFolderOpen: false,
+      openNewTab: false,
+    }),
+    interval: 1000,
+  });
+
+  const updateAllFolderOpen = useCallback(
+    (nextAllFolderOpen: boolean) => {
+      updateConfig({
+        allFolderOpen: nextAllFolderOpen,
+      });
+    },
+    [updateConfig],
+  );
+
+  const updateOpenNewTab = useCallback(
+    (nextOpenNewTab: boolean) => {
+      updateConfig({
+        openNewTab: nextOpenNewTab,
+      });
+    },
+    [updateConfig],
+  );
 
   const state = useMemo<AppState>(() => {
     return {
-      allFolderOpen,
-      openNewTab,
-      updateAllFolderOpen: setAllFolderOpen,
-      updateOpenNewTab: setOpenNewTab,
+      ...config,
+      updateAllFolderOpen,
+      updateOpenNewTab,
     };
-  }, [allFolderOpen, openNewTab]);
+  }, [config, updateAllFolderOpen, updateOpenNewTab]);
 
   return <AppContext.Provider value={state}>{children}</AppContext.Provider>;
 }
