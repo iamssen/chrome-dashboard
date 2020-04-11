@@ -3,11 +3,14 @@ import { format } from 'date-fns';
 import React from 'react';
 import { Link } from './Link';
 import { CheckBox as Check } from '@material-ui/icons';
+import { Title } from './Title';
 
 export const printTaskGroup = ({ printDate = true }: { printDate?: boolean } = {}) => (tasks: TaskGroup[]) => {
   return tasks.map(({ padUrl, title, children }) => (
     <li key={padUrl}>
-      <h4 style={{ margin: 0 }}>{title}</h4>
+      <h4 style={{ margin: 0 }}>
+        <Title text={title} />
+      </h4>
       <ul style={{ margin: '0 0 5px 0' }}>
         {children.map(({ usuallyUniqueId, padUrl, textline, dueDate, encryptedId }) => (
           <li key={encryptedId}>

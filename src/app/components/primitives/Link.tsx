@@ -1,6 +1,7 @@
 import { hasTag } from '@ssen/dashboard-provider/model/title';
 import React, { CSSProperties, MouseEvent, useCallback } from 'react';
 import { useApp } from '../../context/app';
+import { Title } from './Title';
 
 export interface LinkProps {
   href: string;
@@ -33,7 +34,7 @@ export function Link({ href, title }: LinkProps) {
 
   return (
     <a href={href} onClick={open} style={style}>
-      {title}
+      <Title text={title} />
     </a>
   );
 }
