@@ -1,9 +1,12 @@
 import { BookmarkTreeNode, hierarchyBookmarks } from '@ssen/dashboard-provider';
 import { someHierarchy } from '@ssen/hierarchy';
-import { HierarchyList, MemoryOpenProvider, OpenProvider } from '@ssen/hierarchy-list';
-import React, { ReactNode, useMemo } from 'react';
-import { useApp } from '../context/app';
+import { HierarchyList } from '@ssen/hierarchy-list';
+import React, { ReactNode } from 'react';
+import { useApp } from '../../context/app';
+import { useHierarchyListOpenProvider } from '../../services/useHierarchyListOpenProvider';
 import { Link } from './Link';
+import { Bookmark as Favorite, ExpandMore as FolderClose, ExpandLess as FolderOpen } from '@material-ui/icons';
+import { CleanButton } from '../layout/CleanButton';
 
 function initialOpen({ source: { isFavorite }, children }: BookmarkTreeNode): boolean {
   if (isFavorite) return true;
@@ -18,7 +21,7 @@ function initialOpen({ source: { isFavorite }, children }: BookmarkTreeNode): bo
 function titleRenderer({ source: { title, url, isFavorite } }: BookmarkTreeNode): ReactNode {
   return (
     <>
-      {isFavorite && '⭐️'}
+      {isFavorite && <Favorite style={{ marginRight: 5 }} />}
       <Link href={url || ''} title={title} />
     </>
   );
@@ -31,16 +34,18 @@ function dataAttribute({ source: { title, isFavorite } }: BookmarkTreeNode) {
   };
 }
 
-function openRenderer(open: boolean, onToggle: () => void): ReactNode {
-  return <button onClick={onToggle}>{open ? '[+]' : '[-]'}</button>;
-}
+const openRenderer = (allFolderOpen: boolean) => (open: boolean, onToggle: () => void): ReactNode => {
+  return allFolderOpen ? null : (
+    <CleanButton onClick={onToggle}>
+      {open ? <FolderOpen style={{ marginRight: 5 }} /> : <FolderClose style={{ marginRight: 5 }} />}
+    </CleanButton>
+  );
+};
 
 export function BookmarkList({ bookmarks }: { bookmarks: chrome.bookmarks.BookmarkTreeNode[] }) {
   const data = hierarchyBookmarks(bookmarks);
 
-  const openProvider = useMemo<OpenProvider>(() => {
-    return new MemoryOpenProvider();
-  }, []);
+  const openProvider = useHierarchyListOpenProvider('bookmark-list');
 
   const { allFolderOpen } = useApp();
 
@@ -48,7 +53,7 @@ export function BookmarkList({ bookmarks }: { bookmarks: chrome.bookmarks.Bookma
     <HierarchyList
       data={data}
       openProvider={openProvider}
-      openRenderer={openRenderer}
+      openRenderer={openRenderer(allFolderOpen)}
       titleRenderer={titleRenderer}
       dataAttribute={dataAttribute}
       initialOpen={initialOpen}

@@ -1,8 +1,7 @@
 {
-  "name": "@ssen/dashboard-components",
+  "name": "@ssen/use-local-storage",
   "version": "0.1.0",
   "dependencies": {
-    "rxjs": "^6.5.0",
     "react": "^16.12.0"
   }
 }

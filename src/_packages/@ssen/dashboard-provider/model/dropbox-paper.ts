@@ -36,6 +36,12 @@ export function sortFolders(folders: PadListFolder[]): PadListFolder[] {
   return folders.sort(folderSortFunction);
 }
 
+export function sortDocsByRecently(docs: PadListDoc[]): PadListDoc[] {
+  return docs.sort((a: PadListDoc, b: PadListDoc) => {
+    return new Date(b.docView.lastViewedDate) > new Date(a.docView.lastViewedDate) ? 1 : -1;
+  });
+}
+
 export function hierarchyFolders(folders: PadListFolder[]): DropboxPaperFolder[] {
   return hierarchyBy<PadListFolder, DropboxPaperFolder>({
     data: folders,
